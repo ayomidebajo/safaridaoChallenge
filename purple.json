@@ -1,0 +1,20 @@
+{
+    "name": "Purple NFT",
+    "description": "This is my first NFT",
+    "image": "ipfs://bafybeidz73nm4fc33kw77rae2ey47hphvlctxj2he4s6xt5b4fnqk2rzsu",
+    "attributes": [
+      {
+        "trait_type": "Rarity",
+        "value": "Legendary"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Purple"
+      },
+      {
+        "trait_type": "Shape",
+        "value": "tie bow"
+      }
+    ]
+  }
+  

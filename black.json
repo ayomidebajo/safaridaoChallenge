@@ -1,0 +1,20 @@
+{
+    "name": "Black NFT",
+    "description": "Solid NFT",
+    "image": "ipfs://bafybeiema6gp25rjx2viquy6g7n4g5ikoowf3m4r2it32ecma46nmmmge4",
+    "attributes": [
+      {
+        "trait_type": "Rarity",
+        "value": "Semi rare"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Shape",
+        "value": "tie bow"
+      }
+    ]
+  }
+  
