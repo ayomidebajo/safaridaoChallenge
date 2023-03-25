@@ -12,6 +12,7 @@ mod voting {
         // value: bool,
         proposal: Vec<Proposal>,
         max_proposals: u32,
+        registered_voters: Vec<AccountId>,
     }
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode, Clone)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
@@ -32,17 +33,58 @@ mod voting {
         max_votes: u32,
     }
 
+    // Impl Message for Proposal {
+    //     #[ink(message)]
+    //     pub fn get_votes(&self) -> Vec<Proposal> {
+    //         self.votes.clone()
+    //     }
+    // }
+
     impl Voting {
         /// Constructor that initializes the `bool` value to the given `init_value`.
         #[ink(constructor)]
         pub fn new(proposal: Proposal) -> Self {
             let mut proposal_vec = Vec::new();
             proposal_vec.push(proposal);
+            let mut registered_voters = Vec::new();
             Self {
                 proposal: proposal_vec,
                 max_proposals: 10,
+                registered_voters,
             }
         }
+
+        pub fn add_proposal(&mut self, proposal: Proposal) {
+            self.proposal.push(proposal);
+        }
+
+        pub fn vote(&mut self, vote: Vote) {
+            // todo: check if voter is registered
+            let proposal = self.proposal.get_mut(vote.proposal_id as usize).unwrap();
+            proposal.votes.push(vote);
+        }
+
+        pub fn register_voter(&mut self, voter: AccountId) {
+            self.registered_voters.push(voter);
+        }
+
+        pub fn check_proposal(&mut self, proposal_id: u32) {
+            let proposal = self.proposal.get_mut(proposal_id as usize).unwrap();
+            let mut yes_votes = 0;
+            let mut no_votes = 0;
+            for vote in proposal.votes.iter() {
+                if vote.vote {
+                    yes_votes += 1;
+                } else {
+                    no_votes += 1;
+                }
+            }
+            if yes_votes > no_votes {
+                proposal.accepted = true;
+            }
+        }
+
+
 
         /// Constructor that initializes the `bool` value to `false`.
         ///
@@ -65,6 +107,8 @@ mod voting {
         pub fn get(&self) -> Vec<Proposal> {
             self.proposal.clone()
         }
+
+        
     }
 
     /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
@@ -89,6 +133,91 @@ mod voting {
             let voting = Voting::new(new_proposal);
             println!("voting: {:?}", voting);
             // assert_eq!(voting.get(), false);
+        }
+
+        #[ink::test]
+        fn create_proposal_works() {
+            let new_proposal_one = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test"),
+                description: String::from("test"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            let mut voting = Voting::new(new_proposal_one.clone());
+            let new_proposal_two = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test2"),
+                description: String::from("test2"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            voting.add_proposal(new_proposal_two.clone());
+            println!("voting: {:?}", voting);
+            assert_eq!(voting.get(), vec![new_proposal_one, new_proposal_two]);
+        }
+
+        #[ink::test]
+        fn vote_works() {
+            let new_proposal_one = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test"),
+                description: String::from("test"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            let mut voting = Voting::new(new_proposal_one.clone());
+            let new_proposal_two = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test2"),
+                description: String::from("test2"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            voting.add_proposal(new_proposal_two.clone());
+            let vote = Vote {
+                voter: AccountId::from([0x1; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.vote(vote.clone());
+            // println!("voting: {:?}", voting.get());
+            // assert_eq!(proposal_two.get_votes(), vec![vote]);
+        }
+
+
+        #[ink::test]
+        fn check_proposal_works() {
+            let new_proposal_one = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test"),
+                description: String::from("test"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            let mut voting = Voting::new(new_proposal_one.clone());
+            let new_proposal_two = Proposal {
+                proposer: AccountId::from([0x1; 32]),
+                name: String::from("test2"),
+                description: String::from("test2"),
+                accepted: false,
+                votes: Vec::new(),
+                max_votes: 10,
+            };
+            voting.add_proposal(new_proposal_two.clone());
+            let vote = Vote {
+                voter: AccountId::from([0x1; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.vote(vote.clone());
+            // println!("voting: {:?}", voting.get());
+            // assert_eq!(proposal_two.get_votes(), vec![vote]);
         }
     }
 
