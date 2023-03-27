@@ -20,6 +20,7 @@ mod voting {
         voter: AccountId,
         vote: bool,
         proposal_id: u32,
+        // todo:  add token id for nft checking
     }
 
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode, Clone)]
@@ -33,11 +34,15 @@ mod voting {
         max_votes: u32,
     }
 
-    // Impl Message for Proposal {
-    //     #[ink(message)]
-    //     pub fn get_votes(&self) -> Vec<Proposal> {
-    //         self.votes.clone()
-    //     }
+    // todo: fix impl block
+
+    // #[ink(impl)]
+    // Impl Voting {
+    // #[ink(message)]
+    //  #[ink(impl)]
+    // pub fn get_votes(&self) -> Vec<Proposal> {
+    //     self.votes.clone()
+    // }
     // }
 
     impl Voting {
@@ -46,7 +51,7 @@ mod voting {
         pub fn new(proposal: Proposal) -> Self {
             let mut proposal_vec = Vec::new();
             proposal_vec.push(proposal);
-            let mut registered_voters = Vec::new();
+            let registered_voters = Vec::new();
             Self {
                 proposal: proposal_vec,
                 max_proposals: 10,
@@ -59,32 +64,41 @@ mod voting {
         }
 
         pub fn vote(&mut self, vote: Vote) {
-            // todo: check if voter is registered
-            let proposal = self.proposal.get_mut(vote.proposal_id as usize).unwrap();
-            proposal.votes.push(vote);
+            // check if voter is registered
+            if self.registered_voters.iter().any(|i| *i == vote.voter) {
+                let proposal = self.proposal.get_mut(vote.proposal_id as usize).unwrap();
+
+                // I suspect the proposal_id might be stored as a hash instead of a uint
+                proposal.votes.push(vote);
+            }
         }
 
         pub fn register_voter(&mut self, voter: AccountId) {
             self.registered_voters.push(voter);
         }
 
-        pub fn check_proposal(&mut self, proposal_id: u32) {
+        pub fn check_proposal(&mut self, proposal_id: u32) -> bool {
             let proposal = self.proposal.get_mut(proposal_id as usize).unwrap();
-            let mut yes_votes = 0;
-            let mut no_votes = 0;
-            for vote in proposal.votes.iter() {
-                if vote.vote {
-                    yes_votes += 1;
-                } else {
-                    no_votes += 1;
+
+            //  check if the proposal isn't accepted and the max threshold hasn't been reached
+            if proposal.accepted != true {
+                let mut yes_votes = 0;
+                let mut no_votes = 0;
+                for vote in proposal.votes.iter() {
+                    if vote.vote {
+                        yes_votes += 1;
+                    } else {
+                        no_votes += 1;
+                    }
+                }
+                if yes_votes > no_votes {
+                    proposal.accepted = true;
                 }
             }
-            if yes_votes > no_votes {
-                proposal.accepted = true;
-            }
+
+            println!("wtf {:?}", proposal.accepted);
+            proposal.accepted
         }
-
-
 
         /// Constructor that initializes the `bool` value to `false`.
         ///
@@ -107,8 +121,6 @@ mod voting {
         pub fn get(&self) -> Vec<Proposal> {
             self.proposal.clone()
         }
-
-        
     }
 
     /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
@@ -135,6 +147,7 @@ mod voting {
             // assert_eq!(voting.get(), false);
         }
 
+        /// tests for proposal creation successful
         #[ink::test]
         fn create_proposal_works() {
             let new_proposal_one = Proposal {
@@ -159,8 +172,10 @@ mod voting {
             assert_eq!(voting.get(), vec![new_proposal_one, new_proposal_two]);
         }
 
+        /// This checks if the voting works
         #[ink::test]
         fn vote_works() {
+            // First proposal
             let new_proposal_one = Proposal {
                 proposer: AccountId::from([0x1; 32]),
                 name: String::from("test"),
@@ -170,7 +185,9 @@ mod voting {
                 max_votes: 10,
             };
             let mut voting = Voting::new(new_proposal_one.clone());
-            let new_proposal_two = Proposal {
+
+            // Second proposal
+            let mut new_proposal_two = Proposal {
                 proposer: AccountId::from([0x1; 32]),
                 name: String::from("test2"),
                 description: String::from("test2"),
@@ -178,18 +195,35 @@ mod voting {
                 votes: Vec::new(),
                 max_votes: 10,
             };
+            // vote for second proposal
             voting.add_proposal(new_proposal_two.clone());
             let vote = Vote {
                 voter: AccountId::from([0x1; 32]),
                 vote: true,
                 proposal_id: 1,
             };
+
+            // voting.vote(vote.clone());
+            //  push votes
+            new_proposal_two.votes.push(vote.clone());
             voting.vote(vote.clone());
+            println!("voting: {:?}", new_proposal_two.votes.get(0));
+            assert_eq!(new_proposal_two.votes.get(0), Some(&vote));
             // println!("voting: {:?}", voting.get());
             // assert_eq!(proposal_two.get_votes(), vec![vote]);
         }
 
 
+        #[ink::test]
+        fn check_invalid_voter_cant_vote() {
+
+        }
+
+        #[ink::test]
+        fn check_register_voter_works() {
+            
+        }
+        /// this checks for the results after the threshold has been met
         #[ink::test]
         fn check_proposal_works() {
             let new_proposal_one = Proposal {
@@ -201,7 +235,7 @@ mod voting {
                 max_votes: 10,
             };
             let mut voting = Voting::new(new_proposal_one.clone());
-            let new_proposal_two = Proposal {
+            let mut new_proposal_two = Proposal {
                 proposer: AccountId::from([0x1; 32]),
                 name: String::from("test2"),
                 description: String::from("test2"),
@@ -209,17 +243,99 @@ mod voting {
                 votes: Vec::new(),
                 max_votes: 10,
             };
+
             voting.add_proposal(new_proposal_two.clone());
-            let vote = Vote {
+
+            let vote_1 = Vote {
                 voter: AccountId::from([0x1; 32]),
                 vote: true,
                 proposal_id: 1,
             };
-            voting.vote(vote.clone());
-            // println!("voting: {:?}", voting.get());
-            // assert_eq!(proposal_two.get_votes(), vec![vote]);
+
+            voting.register_voter(vote_1.clone().voter);
+
+            let vote_2 = Vote {
+                voter: AccountId::from([0x2; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_2.clone().voter);
+            let vote_3 = Vote {
+                voter: AccountId::from([0x3; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_3.clone().voter);
+
+            let vote_4 = Vote {
+                voter: AccountId::from([0x4; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_4.clone().voter);
+
+            let vote_5 = Vote {
+                voter: AccountId::from([0x5; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_5.clone().voter);
+
+            let vote_6 = Vote {
+                voter: AccountId::from([0x6; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_6.clone().voter);
+
+            let vote_7 = Vote {
+                voter: AccountId::from([0x7; 32]),
+                vote: true,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_7.clone().voter);
+
+            let vote_8 = Vote {
+                voter: AccountId::from([0x8; 32]),
+                vote: false,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_8.clone().voter);
+
+            let vote_9 = Vote {
+                voter: AccountId::from([0x9; 32]),
+                vote: false,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_9.clone().voter);
+
+            let vote_10 = Vote {
+                voter: AccountId::from([0x10; 32]),
+                vote: false,
+                proposal_id: 1,
+            };
+            voting.register_voter(vote_10.clone().voter);
+
+            voting.vote(vote_1.clone());
+            voting.vote(vote_2);
+            voting.vote(vote_3);
+            voting.vote(vote_4);
+            voting.vote(vote_5);
+            voting.vote(vote_6);
+            voting.vote(vote_7);
+            voting.vote(vote_8);
+            voting.vote(vote_9);
+            voting.vote(vote_10);
+
+            // println!("voting: {:?}", voting.check_proposal(1));
+            voting.check_proposal(1);
+            // println!("wtf 2 {:?}", voting);
+
+            assert_eq!(voting.check_proposal(1), true);
         }
     }
+
+
 
     /// This is how you'd write end-to-end (E2E) or integration tests for ink! contracts.
     ///
