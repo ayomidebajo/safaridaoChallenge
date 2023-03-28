@@ -38,6 +38,8 @@ mod voting {
 
     // todo: fix impl block
 
+    // Create a list of wallet addresses for the registered voters
+
     // #[ink(impl)]
     // Impl Voting {
     // #[ink(message)]
