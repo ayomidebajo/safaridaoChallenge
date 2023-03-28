@@ -20,6 +20,7 @@ mod voting {
         voter: AccountId,
         vote: bool,
         proposal_id: u32,
+        token_id: u32,
         // todo:  add token id for nft checking
     }
 
@@ -32,6 +33,7 @@ mod voting {
         accepted: bool,
         votes: Vec<Vote>,
         max_votes: u32,
+        base_uri: String,
     }
 
     // todo: fix impl block
@@ -213,16 +215,11 @@ mod voting {
             // assert_eq!(proposal_two.get_votes(), vec![vote]);
         }
 
+        #[ink::test]
+        fn check_invalid_voter_cant_vote() {}
 
         #[ink::test]
-        fn check_invalid_voter_cant_vote() {
-
-        }
-
-        #[ink::test]
-        fn check_register_voter_works() {
-            
-        }
+        fn check_register_voter_works() {}
         /// this checks for the results after the threshold has been met
         #[ink::test]
         fn check_proposal_works() {
@@ -334,8 +331,6 @@ mod voting {
             assert_eq!(voting.check_proposal(1), true);
         }
     }
-
-
 
     /// This is how you'd write end-to-end (E2E) or integration tests for ink! contracts.
     ///
