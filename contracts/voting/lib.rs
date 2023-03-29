@@ -2,6 +2,20 @@
 
 #[ink::contract]
 mod voting {
+    use ink::{
+        env::{
+            call::{
+                build_call,
+                ExecutionInput,
+            },
+            CallFlags,
+        },
+        prelude::{
+            string::String,
+            vec::Vec,
+        },
+        storage::Mapping,
+    };
 
     /// Defines the storage of your contract.
     /// Add new fields to the below struct in order
@@ -87,7 +101,7 @@ mod voting {
                 }
             }
 
-            println!("wtf {:?}", proposal.accepted);
+            // println!("wtf {:?}", proposal.accepted);
             proposal.accepted
         }
 
@@ -143,7 +157,7 @@ mod voting {
                 max_votes: 10,
             };
             voting.add_proposal(new_proposal_two.clone());
-            println!("voting: {:?}", voting);
+            // println!("voting: {:?}", voting);
             assert_eq!(voting.get(), vec![new_proposal_one, new_proposal_two]);
         }
 
