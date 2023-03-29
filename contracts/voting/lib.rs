@@ -63,11 +63,13 @@ mod voting {
                 registered_voters,
             }
         }
-
+        /// submit a proposal
+        #[ink(message)]
         pub fn add_proposal(&mut self, proposal: Proposal) {
             self.proposal.push(proposal);
         }
-
+        /// votes for a proposal
+        #[ink(message)]
         pub fn vote(&mut self, vote: Vote) {
             // check if voter is registered
             if self.registered_voters.iter().any(|i| *i == vote.voter) {
@@ -77,11 +79,14 @@ mod voting {
                 proposal.votes.push(vote);
             }
         }
-
+        /// registers a voter
+        #[ink(message)]
         pub fn register_voter(&mut self, voter: AccountId) {
             self.registered_voters.push(voter);
         }
 
+        /// checks the proposal if it has been accepted
+        #[ink(message)]
         pub fn check_proposal(&mut self, proposal_id: u32) -> bool {
             let proposal = self.proposal.get_mut(proposal_id as usize).unwrap();
 
