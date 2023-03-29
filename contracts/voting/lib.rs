@@ -36,19 +36,6 @@ mod voting {
         base_uri: String,
     }
 
-    // todo: fix impl block
-
-    // Create a list of wallet addresses for the registered voters
-
-    // #[ink(impl)]
-    // Impl Voting {
-    // #[ink(message)]
-    //  #[ink(impl)]
-    // pub fn get_votes(&self) -> Vec<Proposal> {
-    //     self.votes.clone()
-    // }
-    // }
-
     impl Voting {
         /// Constructor that initializes the `bool` value to the given `init_value`.
         #[ink(constructor)]
@@ -103,22 +90,6 @@ mod voting {
             println!("wtf {:?}", proposal.accepted);
             proposal.accepted
         }
-
-        /// Constructor that initializes the `bool` value to `false`.
-        ///
-        /// Constructors can delegate to other constructors.
-        // #[ink(constructor)]
-        // pub fn default() -> Self {
-        //     Self::new(Default::default())
-        // }
-
-        /// A message that can be called on instantiated contracts.
-        /// This one flips the value of the stored `bool` from `true`
-        /// to `false` and vice versa.
-        // #[ink(message)]
-        // pub fn flip(&mut self) {
-        //     self.value = !self.value;
-        // }
 
         /// Simply returns the current value of our `bool`.
         #[ink(message)]
