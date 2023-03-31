@@ -27,6 +27,7 @@ mod voting {
         proposal: Vec<Proposal>,
         max_proposals: u32,
         registered_voters: Vec<AccountId>,
+        max_votes: u32,
     }
     #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode, Clone)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
@@ -46,7 +47,6 @@ mod voting {
         description: String,
         accepted: bool,
         votes: Vec<Vote>,
-        max_votes: u32,
         base_uri: String,
     }
 
@@ -60,6 +60,7 @@ mod voting {
             Self {
                 proposal: proposal_vec,
                 max_proposals: 10,
+                max_votes: 10,
                 registered_voters,
             }
         }
@@ -95,10 +96,12 @@ mod voting {
                 let mut yes_votes = 0;
                 let mut no_votes = 0;
                 for vote in proposal.votes.iter() {
-                    if vote.vote {
-                        yes_votes += 1;
-                    } else {
-                        no_votes += 1;
+                    if yes_votes + no_votes < self.max_votes {
+                        if vote.vote {
+                            yes_votes += 1;
+                        } else {
+                            no_votes += 1;
+                        }
                     }
                 }
                 if yes_votes > no_votes {
