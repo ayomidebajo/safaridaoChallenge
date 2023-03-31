@@ -118,6 +118,11 @@ mod voting {
         pub fn get(&self) -> Vec<Proposal> {
             self.proposal.clone()
         }
+
+        #[ink(message)]
+        pub fn get_registered_voters(&self) -> Vec<AccountId> {
+            self.registered_voters.clone()
+        }
     }
 
     /// Unit tests in Rust are normally defined within such a `#[cfg(test)]`
