@@ -1,13 +1,11 @@
 import React from "react";
-import { Card, Button } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { Vote } from "../types";
 import {
   useInkathon,
   useRegisteredContract,
   contractTx,
-  contractQuery,
-  unwrapResultOrDefault,
 } from "@scio-labs/use-inkathon";
 import { toast } from "react-hot-toast";
 import { Radio, RadioGroup } from "@chakra-ui/react";
@@ -37,6 +35,8 @@ export default function SubmitVote({ ...props }) {
       proposalId: props.id,
       tokenId: 0,
     };
+
+    // todo: add token id using dropdown
 
     try {
       api.setSigner(activeSigner);

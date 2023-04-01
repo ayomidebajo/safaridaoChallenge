@@ -1,4 +1,4 @@
-import { VoteIndex } from "@polkadot/types/interfaces";
+// import { VoteIndex } from "@polkadot/types/interfaces";
 
 // export const initialValues: Values = { url: '', alias: nanoid(5) };
 

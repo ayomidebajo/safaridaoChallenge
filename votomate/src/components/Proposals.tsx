@@ -1,5 +1,5 @@
 import React from "react";
-import { VotingProposal } from "../types";
+// import { VotingProposal } from "../types";
 
 function Proposals() {
 //   console.log(props, "props");
