@@ -8,7 +8,7 @@ import {
   contractTx,
 } from "@scio-labs/use-inkathon";
 import { toast } from "react-hot-toast";
-import { Radio, RadioGroup } from "@chakra-ui/react";
+import { Radio, RadioGroup, Select} from "@chakra-ui/react";
 
 export default function SubmitVote({ ...props }) {
   const { api, activeAccount, activeSigner } = useInkathon();
@@ -59,7 +59,6 @@ export default function SubmitVote({ ...props }) {
   };
 
   return (
-    // <Card>
     <>
       <h4>Vote for Proposal</h4>
       <div className="display-block">
@@ -76,6 +75,12 @@ export default function SubmitVote({ ...props }) {
             <Radio value="1">Aye</Radio>
             <Radio value="2">Nay</Radio>
           </RadioGroup>
+
+          <Select placeholder="Select Symbol">
+            <option value="BON">BON</option>
+            <option value="NOB">NOB</option>
+            <option value="OBN">OBN</option>
+          </Select>
         </div>
         <Button
           onClick={() => {
@@ -89,6 +94,5 @@ export default function SubmitVote({ ...props }) {
         </Button>
       </div>
     </>
-    // </Card>
   );
 }

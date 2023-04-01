@@ -17,6 +17,8 @@ mod voting {
         storage::Mapping,
     };
 
+    //  use num_traits::float::FloatCore;
+
     /// Defines the storage of your contract.
     /// Add new fields to the below struct in order
     /// to add new static storage fields to your contract.
@@ -48,6 +50,7 @@ mod voting {
         accepted: bool,
         votes: Vec<Vote>,
         base_uri: String,
+        percentage_win: u32
     }
 
     impl Voting {
@@ -60,7 +63,7 @@ mod voting {
             Self {
                 proposal: proposal_vec,
                 max_proposals: 10,
-                max_votes: 10,
+                max_votes: 3,
                 registered_voters,
             }
         }
@@ -99,6 +102,7 @@ mod voting {
                     if yes_votes + no_votes < self.max_votes {
                         if vote.vote {
                             yes_votes += 1;
+                             
                         } else {
                             no_votes += 1;
                         }

@@ -96,6 +96,8 @@ function App() {
     // console.log(voterss, "voterss");
 
     setVoteObject(proposal);
+
+    let voteBars = {};
     // setVoters(voterss);
   };
 
@@ -187,61 +189,82 @@ function App() {
         </Button>
         <h3>List of Proposals</h3>
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-          {voteObject?.map((vote: VotingProposal, i) => (
-            <GridItem>
-              <Card
-                variant="elevated"
-                size="lg"
-                align="flex-start"
-                className="mb-2"
-                key={i}
-              >
-                <CardBody>
-                  <Grid templateColumns="repeat(2, 1fr)" gap={10}>
-                    <div className="">
-                      <Text align="start">Name: {vote.name}</Text>
-                      <Text align="start">Description: {vote.description}</Text>
-                      <Text align="start">
-                        Accepted: {vote.accepted ? "true" : "false"}
-                      </Text>
+          {voteObject?.map((vote: VotingProposal, i) => {
+            let num = 0;
+            let callc = vote.votes.forEach((vote) => {
+              if (vote.vote) {
+                num++;
+              }
+              // return num;
+            });
+            let voteWins = {
+              [i]: num,
+            };
+            console.log(voteWins, "voteWins");
 
-                      <Text align="start">
-                        <Button
-                          alignSelf="flex-start"
-                          colorScheme={"teal"}
-                          onClick={() => {
-                            setModal(true);
-                            setProps({
-                              account: activeAccount?.address,
-                              id: i,
-                            });
-                          }}
+            return (
+              <>
+                <GridItem>
+                  <Card
+                    variant="elevated"
+                    size="lg"
+                    align="flex-start"
+                    className="mb-2"
+                    key={i}
+                  >
+                    <CardBody>
+                      <Grid templateColumns="repeat(2, 1fr)" gap={10}>
+                        <div className="">
+                          <Text align="start">Name: {vote.name}</Text>
+                          <Text align="start">
+                            Description: {vote.description}
+                          </Text>
+                          <Text align="start">
+                            Accepted: {vote.accepted ? "true" : "false"}
+                          </Text>
+
+                          <Text align="start">
+                            <Button
+                              alignSelf="flex-start"
+                              colorScheme={"teal"}
+                              onClick={() => {
+                                setModal(true);
+                                setProps({
+                                  account: activeAccount?.address,
+                                  id: i,
+                                });
+                              }}
+                            >
+                              Vote
+                            </Button>
+                          </Text>
+                        </div>
+                        <Box
+                          alignSelf="flex-end"
+                          w="100%"
+                          justifySelf="flex-end"
+                          className=""
                         >
-                          Vote
-                        </Button>
-                      </Text>
-                    </div>
-                    <Box
-                      alignSelf="flex-end"
-                      w="100%"
-                      justifySelf="flex-end"
-                      className=""
-                    >
-                      <CircularProgress
-                        // alignItems="center"
-                        alignSelf="flex-start"
-                        value={30}
-                        color="green.400"
-                        size="100px"
-                      >
-                        <CircularProgressLabel>40%</CircularProgressLabel>
-                      </CircularProgress>
-                    </Box>
-                  </Grid>
-                </CardBody>
-              </Card>
-            </GridItem>
-          ))}
+                          <CircularProgress
+                            // alignItems="center"
+                            alignSelf="flex-start"
+                            value={num * 10}
+                            max={30}
+                            color="green.400"
+                            size="100px"
+                          >
+                            <CircularProgressLabel>
+                              {Math.floor((num / 3) * 100)}%
+                            </CircularProgressLabel>
+                          </CircularProgress>
+                        </Box>
+                      </Grid>
+                    </CardBody>
+                  </Card>
+                </GridItem>
+              </>
+            );
+          })}
         </Grid>
 
         <Modal
