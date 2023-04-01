@@ -21,5 +21,10 @@ These nfts can be used for voting processes, attending metaverse events within t
 - React for frontend
 - Built on Polkadot relay chain.
 
+### 
+How to run
 
+`cd` into votomate after installing the dependencies using `yarn` or `npm`
+
+Run `yarn start` or `npm start` depending on the package manager you used.
 
