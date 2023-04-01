@@ -50,7 +50,6 @@ mod voting {
         accepted: bool,
         votes: Vec<Vote>,
         base_uri: String,
-        percentage_win: u32
     }
 
     impl Voting {
