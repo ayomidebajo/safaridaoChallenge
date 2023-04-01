@@ -1,24 +1,32 @@
 import React from "react";
 import { Card, Button } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Vote } from "../types";
 import {
   useInkathon,
   useRegisteredContract,
   contractTx,
+  contractQuery,
+  unwrapResultOrDefault,
 } from "@scio-labs/use-inkathon";
 import { toast } from "react-hot-toast";
 import { Radio, RadioGroup } from "@chakra-ui/react";
 
 export default function SubmitVote({ ...props }) {
-  // const [name, setName] = useState("");
-  // const [description, setDescription] = useState("");
   const { api, activeAccount, activeSigner } = useInkathon();
   const { contract } = useRegisteredContract("Voting");
   const [chooseVote, setChooseVote] = useState<string>("1");
   const [vote, setVote] = useState<boolean>(true);
 
-  // console.log(props, "props");
+  const getVoters = async () => {
+    if (!api || !activeAccount || !activeSigner || !contract) return;
+  };
+
+  useEffect(() => {
+    getVoters();
+  }, []);
+
+  // console.log(voters, "props");
 
   const createProposal = async () => {
     // if (!name && !description) return;
@@ -51,7 +59,8 @@ export default function SubmitVote({ ...props }) {
   };
 
   return (
-    <Card>
+    // <Card>
+    <>
       <h4>Vote for Proposal</h4>
       <div className="display-block">
         <div className="flex">
@@ -59,16 +68,13 @@ export default function SubmitVote({ ...props }) {
             onChange={(e) => {
               setChooseVote(e);
               console.log(e, "chui");
-              
+
               setVote(e === "1" ? true : false);
-              
             }}
             value={chooseVote}
           >
-            {/* <Stack direction="row"> */}
             <Radio value="1">Aye</Radio>
             <Radio value="2">Nay</Radio>
-            {/* </Stack> */}
           </RadioGroup>
         </div>
         <Button
@@ -79,9 +85,10 @@ export default function SubmitVote({ ...props }) {
           }}
           colorScheme={"teal"}
         >
-          Create
+          Submite vote
         </Button>
       </div>
-    </Card>
+    </>
+    // </Card>
   );
 }

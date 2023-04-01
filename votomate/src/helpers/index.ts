@@ -4,7 +4,7 @@
 import type { ContractExecResult } from "@polkadot/types/interfaces";
 import type { Registry, TypeDef } from "@polkadot/types/types";
 import type { AbiMessage } from "@polkadot/api-contract/types";
-import { Proposals, ShorteningResult } from "../types";
+// import { Proposals, ShorteningResult } from "../types";
 
 export function getReturnTypeName(type: TypeDef | null | undefined) {
   return type?.lookupName || type?.type || "";

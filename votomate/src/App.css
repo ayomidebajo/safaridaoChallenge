@@ -13,10 +13,14 @@
   }
 }
 
-.display-block {
+.flex-btw {
+  justify-content: space-between !important;
+}
+
+/* .display-block {
   display: block;
   padding: 20px;
-}
+} */
 
 .input {
   height: 35px;

@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0xcf199eee6e24d4be689f60f3c809d13b9e8bce6ecee149601828b911f3cc1e3d",
+    "hash": "0x4a0d0969ff7a6497604198606ce5aa431eeb2351891f7e963abeb835cf2c249c",
     "language": "ink! 4.0.1",
     "compiler": "rustc 1.70.0-nightly",
     "build_info": {
@@ -183,6 +183,21 @@
           "type": 15
         },
         "selector": "0x2f865bd9"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "label": "get_registered_voters",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 16
+        },
+        "selector": "0x45a5c64f"
       }
     ]
   },
@@ -552,6 +567,48 @@
           {
             "name": "T",
             "type": 0
+          },
+          {
+            "name": "E",
+            "type": 13
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 13
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 10
           },
           {
             "name": "E",

@@ -1,19 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
-import logo from "./logo.svg";
-import { useApi, useExtension, useCall } from "useink";
-import { useLinkContract } from "./contexts/LinkContract";
-import { getReturnTypeName } from "./helpers";
-import { EstimationProvider } from "./contexts/Estimation";
-import { getDecodedOutput } from "./helpers";
-import Modal  from "react-modal";
-import type {
-  DispatchError,
-  ContractExecResult,
-} from "@polkadot/types/interfaces";
+import Modal from "react-modal";
 import "./App.css";
-import { useCallback } from "react";
-import { useDryRun } from "./hooks/useDryRun";
+import { useCallback, useEffect } from "react";
 import {
   useInkathon,
   useRegisteredContract,
@@ -25,7 +14,16 @@ import { Vote, VotingProposal } from "./types";
 import ConnectButton from "./components/ConnectButton";
 import { Button } from "@chakra-ui/react";
 import Proposals from "./components/Proposals";
-import { Card, CardHeader, CardBody, CardFooter, Text } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  Text,
+  Grid,
+  GridItem,
+  CircularProgress,
+  CircularProgressLabel,
+  Box,
+} from "@chakra-ui/react";
 import { toast } from "react-hot-toast";
 import SubmitVote from "./components/SubmitVote";
 
@@ -37,6 +35,21 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
+    height: "30%",
+    width: "50%",
+  },
+};
+
+const customStylesVote = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    // height: "20%",
+    // width: "50%",
   },
 };
 
@@ -50,13 +63,12 @@ function App() {
     setModal(true);
   }
 
-  // function afterOpenModal() {
-  //   // references are now sync'd and can be accessed.
-  //   subtitle.style.color = "#f00";
-  // }
-
   function closeModal() {
     setModal(false);
+  }
+
+  function closeModalProposal() {
+    setCreateProposalModal(false);
   }
   const { api, activeAccount, activeSigner } = useInkathon();
   const { contract } = useRegisteredContract("Voting");
@@ -65,6 +77,9 @@ function App() {
   const [description, setDescription] = useState<string>("");
   const [modal, setModal] = useState<boolean>(false);
   const [props, setProps] = useState<Props>({ account: "", id: 0 });
+  const [voters, setVoters] = useState<Array<string>>([]);
+  const [createProposalModal, setCreateProposalModal] =
+    useState<boolean>(false);
 
   const onClickSth = async () => {
     if (!api || !activeAccount || !activeSigner || !contract) return;
@@ -75,9 +90,32 @@ function App() {
       "get",
       {}
     );
+
     const proposal = unwrapResultOrDefault(result, [] as VotingProposal[]);
+
+    // console.log(voterss, "voterss");
+
     setVoteObject(proposal);
+    // setVoters(voterss);
   };
+
+  const getVotes = async () => {
+    if (!api || !activeAccount || !activeSigner || !contract) return;
+
+    const resultVoters = await contractQuery(
+      api,
+      activeAccount?.address,
+      contract,
+      "getRegisteredVoters",
+      {}
+    );
+    const voterss = unwrapResultOrDefault(resultVoters, [] as string[]);
+
+    setVoters(voterss);
+  };
+
+  console.log(voteObject, "voters");
+  console.log(voters, "voterss");
 
   const createProposal = async () => {
     if (!name && !description) return;
@@ -126,41 +164,94 @@ function App() {
     <div className="App">
       <header className="">
         <ConnectButton />
-        <Button onClick={onClickSth} colorScheme={"teal"}>
+        <Button
+          onClick={() => {
+            onClickSth();
+            getVotes();
+          }}
+          colorScheme={"teal"}
+          className="mb-2 mr-2"
+        >
           Get
         </Button>
-        {/* <Proposals /> */}
+        <Button
+          onClick={() => {
+            onClickSth();
+            getVotes();
+            setCreateProposalModal(true);
+          }}
+          colorScheme={"teal"}
+          className="mb-2 "
+        >
+          Create
+        </Button>
         <h3>List of Proposals</h3>
-        {voteObject?.map((vote: VotingProposal, i) => (
-          <Card align="flex-start" className="mb-2" key={i}>
-            <CardBody>
-              {/* <Text> */}
-              <p>Name: {vote.name}</p>
-              <p>Description: {vote.description}</p>
-              <p>Accepted: {vote.accepted ? "true" : "false"}</p>
-
-              <Button
-                colorScheme={"teal"}
-                onClick={() => {
-                  setModal(true);
-                  setProps({
-                    account: activeAccount?.address,
-                    id: i,
-                  });
-                }}
+        <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          {voteObject?.map((vote: VotingProposal, i) => (
+            <GridItem>
+              <Card
+                variant="elevated"
+                size="lg"
+                align="flex-start"
+                className="mb-2"
+                key={i}
               >
-                Vote
-              </Button>
-              {/* </Text> */}
-            </CardBody>
-          </Card>
-          // <div key={i}>
+                <CardBody>
+                  <Grid templateColumns="repeat(2, 1fr)" gap={10}>
+                    <div className="">
+                      <Text align="start">Name: {vote.name}</Text>
+                      <Text align="start">Description: {vote.description}</Text>
+                      <Text align="start">
+                        Accepted: {vote.accepted ? "true" : "false"}
+                      </Text>
 
-          // </div>
-        ))}
+                      <Text align="start">
+                        <Button
+                          alignSelf="flex-start"
+                          colorScheme={"teal"}
+                          onClick={() => {
+                            setModal(true);
+                            setProps({
+                              account: activeAccount?.address,
+                              id: i,
+                            });
+                          }}
+                        >
+                          Vote
+                        </Button>
+                      </Text>
+                    </div>
+                    <Box
+                      alignSelf="flex-end"
+                      w="100%"
+                      justifySelf="flex-end"
+                      className=""
+                    >
+                      <CircularProgress
+                        // alignItems="center"
+                        alignSelf="flex-start"
+                        value={30}
+                        color="green.400"
+                        size="100px"
+                      >
+                        <CircularProgressLabel>40%</CircularProgressLabel>
+                      </CircularProgress>
+                    </Box>
+                  </Grid>
+                </CardBody>
+              </Card>
+            </GridItem>
+          ))}
+        </Grid>
 
-        <h3>Create a proposal</h3>
-        <Card>
+        <Modal
+          isOpen={createProposalModal}
+          onRequestClose={closeModalProposal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <h3 className="mb-2">Create a proposal</h3>
+          {/* <Card> */}
           <div className="display-block">
             <div className="flex">
               <p className="mr-2">Name</p>
@@ -170,6 +261,8 @@ function App() {
                 className="input"
                 placeholder="add propsal"
                 value={name}
+                required
+                title="Create a proposal"
               />
             </div>
             <div className="flex">
@@ -180,6 +273,7 @@ function App() {
                 className="input"
                 placeholder="Description"
                 value={description}
+                required
               />
             </div>
             <Button
@@ -187,19 +281,23 @@ function App() {
                 createProposal();
                 setName("");
                 setDescription("");
+                setCreateProposalModal(false);
               }}
+              isDisabled={name.length < 1 && description.length < 1}
+              // disabled={true}
               colorScheme={"teal"}
             >
               Create
             </Button>
           </div>
-        </Card>
+          {/* </Card> */}
+        </Modal>
 
         <Modal
           isOpen={modal}
           // onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
-          style={customStyles}
+          style={customStylesVote}
           contentLabel="Example Modal"
         >
           <SubmitVote {...props} />

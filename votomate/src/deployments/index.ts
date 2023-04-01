@@ -1,5 +1,5 @@
 // import { ContractID } from "@/types/Contracts";
-import { SubstrateDeployment, rococo, alephzeroTestnet} from "@scio-labs/use-inkathon";
+import { SubstrateDeployment, alephzeroTestnet} from "@scio-labs/use-inkathon";
 import { contractAddress } from "../const";
 
 export const getDeployments = async (): Promise<SubstrateDeployment[]> => {
