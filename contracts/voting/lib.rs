@@ -2,19 +2,9 @@
 
 #[ink::contract]
 mod voting {
-    use ink::{
-        env::{
-            call::{
-                build_call,
-                ExecutionInput,
-            },
-            CallFlags,
-        },
-        prelude::{
-            string::String,
-            vec::Vec,
-        },
-        storage::Mapping,
+    use ink::prelude::{
+        string::String,
+        vec::Vec,
     };
 
     //  use num_traits::float::FloatCore;
