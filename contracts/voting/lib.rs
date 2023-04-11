@@ -101,7 +101,6 @@ mod voting {
                     if yes_votes + no_votes < self.max_votes {
                         if vote.vote {
                             yes_votes += 1;
-                             
                         } else {
                             no_votes += 1;
                         }
@@ -145,7 +144,7 @@ mod voting {
                 description: String::from("test"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             let voting = Voting::new(new_proposal);
             println!("voting: {:?}", voting);
@@ -161,7 +160,7 @@ mod voting {
                 description: String::from("test"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             let mut voting = Voting::new(new_proposal_one.clone());
             let new_proposal_two = Proposal {
@@ -170,10 +169,9 @@ mod voting {
                 description: String::from("test2"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             voting.add_proposal(new_proposal_two.clone());
-            // println!("voting: {:?}", voting);
             assert_eq!(voting.get(), vec![new_proposal_one, new_proposal_two]);
         }
 
@@ -187,7 +185,7 @@ mod voting {
                 description: String::from("test"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             let mut voting = Voting::new(new_proposal_one.clone());
 
@@ -198,7 +196,7 @@ mod voting {
                 description: String::from("test2"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             // vote for second proposal
             voting.add_proposal(new_proposal_two.clone());
@@ -206,9 +204,11 @@ mod voting {
                 voter: AccountId::from([0x1; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
 
             // voting.vote(vote.clone());
+
             //  push votes
             new_proposal_two.votes.push(vote.clone());
             voting.vote(vote.clone());
@@ -232,16 +232,16 @@ mod voting {
                 description: String::from("test"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
             let mut voting = Voting::new(new_proposal_one.clone());
-            let mut new_proposal_two = Proposal {
+            let new_proposal_two = Proposal {
                 proposer: AccountId::from([0x1; 32]),
                 name: String::from("test2"),
                 description: String::from("test2"),
                 accepted: false,
                 votes: Vec::new(),
-                max_votes: 10,
+                base_uri: String::from("test"),
             };
 
             voting.add_proposal(new_proposal_two.clone());
@@ -250,6 +250,7 @@ mod voting {
                 voter: AccountId::from([0x1; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
 
             voting.register_voter(vote_1.clone().voter);
@@ -258,12 +259,14 @@ mod voting {
                 voter: AccountId::from([0x2; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_2.clone().voter);
             let vote_3 = Vote {
                 voter: AccountId::from([0x3; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_3.clone().voter);
 
@@ -271,6 +274,7 @@ mod voting {
                 voter: AccountId::from([0x4; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_4.clone().voter);
 
@@ -278,6 +282,7 @@ mod voting {
                 voter: AccountId::from([0x5; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_5.clone().voter);
 
@@ -285,6 +290,7 @@ mod voting {
                 voter: AccountId::from([0x6; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_6.clone().voter);
 
@@ -292,6 +298,7 @@ mod voting {
                 voter: AccountId::from([0x7; 32]),
                 vote: true,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_7.clone().voter);
 
@@ -299,6 +306,7 @@ mod voting {
                 voter: AccountId::from([0x8; 32]),
                 vote: false,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_8.clone().voter);
 
@@ -306,6 +314,7 @@ mod voting {
                 voter: AccountId::from([0x9; 32]),
                 vote: false,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_9.clone().voter);
 
@@ -313,6 +322,7 @@ mod voting {
                 voter: AccountId::from([0x10; 32]),
                 vote: false,
                 proposal_id: 1,
+                token_id: 1,
             };
             voting.register_voter(vote_10.clone().voter);
 
