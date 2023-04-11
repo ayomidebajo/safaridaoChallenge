@@ -6,16 +6,10 @@ mod voting {
         string::String,
         vec::Vec,
     };
-
-    //  use num_traits::float::FloatCore;
-
-    /// Defines the storage of your contract.
-    /// Add new fields to the below struct in order
-    /// to add new static storage fields to your contract.
+    
     #[ink(storage)]
     pub struct Voting {
-        /// Stores a single `bool` value on the storage.
-        // value: bool,
+
         proposal: Vec<Proposal>,
         max_proposals: u32,
         registered_voters: Vec<AccountId>,
